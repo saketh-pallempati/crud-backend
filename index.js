@@ -1,11 +1,14 @@
 import { MongoClient } from "mongodb";
 import express from "express";
 import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const uri = "mongodb://localhost:27017/";
+const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 
 const db = client.db("crud");
@@ -28,7 +31,7 @@ app.route('/users')
     })
     .put(async (req, res) => {
         const { email } = req.query;
-        const result = await users.findOneAndUpdate({ email }, { $set: req.body }, { returnDocument: 'after' });
+        const result = await users.updateOne({ email }, { $set: req.body })
         res.json(result);
     })
     .delete(async (req, res) => {
